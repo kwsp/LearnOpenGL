@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "learn-opengl",
+  "version": "0.1",
+  "dependencies": [
+    "fmt",
+    "glfw3",
+    {
+      "name": "glad",
+      "features": ["gl-api-33"]
+    },
+    {
+      "name": "imgui",
+      "features": ["opengl3-binding", "glfw-binding", "docking-experimental"]
+    }
+  ]
+}
