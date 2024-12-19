@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <fmt/core.h>
 #include <initializer_list>
+#include <span>
 #include <vector>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -122,10 +123,16 @@ int main(int argc, char *argv[]) {
       0.5F,  -0.5F, 0.0F, // bottom right
       -0.5F, -0.5F, 0.0F, // bottom left
       -0.5F, 0.5F,  0.0F, // top right
+
+      -0.9F, -0.7F, 0.0F, //
+      -0.7F, -0.7F, 0.0F, //
+      -0.8F, -0.8F, 0.0F, //
   };
   std::vector<unsigned int> indices = {
       0, 1, 3, // First triangle
       1, 2, 3, // Second triangle
+
+      4, 5, 6, // Third triangle
   };
 
   // Vertex array object (VAO)
@@ -150,6 +157,7 @@ int main(int argc, char *argv[]) {
                  vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
                  indices.data(), GL_STATIC_DRAW);
 
@@ -166,7 +174,7 @@ int main(int argc, char *argv[]) {
   // -----------
 
   // Wireframe mode (for debug)
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window)) {
     // Input
@@ -181,7 +189,7 @@ int main(int argc, char *argv[]) {
     // Draw triangle
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     // glfw: swap buffers and poll IO events (keys, mouse)
