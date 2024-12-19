@@ -32,6 +32,14 @@ const char *const fragmentShaderSource =
     "  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\0";
 
+const char *const fragmentShaderSource1 =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "  FragColor = vec4(1.0f, 0.5f, 0.5f, 1.0f);\n"
+    "}\0";
+
 unsigned int compileShader(int shaderType, const char *const shaderSource) {
   // Vertex shader
   unsigned int shader = glCreateShader(shaderType);
@@ -129,9 +137,14 @@ int main(int argc, char *argv[]) {
   // ------------------------------------
   auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
   auto fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+  auto fragmentShader1 = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource1);
+
   auto shaderProgram = createShaderProgram({vertexShader, fragmentShader});
+  auto shaderProgram1 = createShaderProgram({vertexShader, fragmentShader1});
+
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+  glDeleteShader(fragmentShader1);
 
   // Setup vertex data
   // -----------------
@@ -210,6 +223,8 @@ int main(int argc, char *argv[]) {
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO[0]);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    glUseProgram(shaderProgram1);
     glBindVertexArray(VAO[1]);
     glDrawElements(GL_TRIANGLES, indices1.size(), GL_UNSIGNED_INT, 0);
 
