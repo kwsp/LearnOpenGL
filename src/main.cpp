@@ -123,43 +123,67 @@ int main(int argc, char *argv[]) {
       0.5F,  -0.5F, 0.0F, // bottom right
       -0.5F, -0.5F, 0.0F, // bottom left
       -0.5F, 0.5F,  0.0F, // top right
-
-      -0.9F, -0.7F, 0.0F, //
-      -0.7F, -0.7F, 0.0F, //
-      -0.8F, -0.8F, 0.0F, //
   };
   std::vector<unsigned int> indices = {
       0, 1, 3, // First triangle
       1, 2, 3, // Second triangle
 
-      4, 5, 6, // Third triangle
   };
 
+  std::vector<float> vertices1 = {
+      -0.9F, -0.7F, 0.0F, //
+      -0.7F, -0.7F, 0.0F, //
+      -0.8F, -0.8F, 0.0F, //
+  };
+  std::vector<unsigned int> indices1 = {0, 1, 2};
+
   // Vertex array object (VAO)
-  unsigned int VAO{};
-  glGenVertexArrays(1, &VAO);
+  unsigned int VAO[2];
+  glGenVertexArrays(2, VAO);
 
   // Vertex buffer object (VBO)
-  unsigned int VBO{};
-  glGenBuffers(1, &VBO);
+  unsigned int VBO[2];
+  glGenBuffers(2, VBO);
 
   // Element buffer object (EBO)
-  unsigned int EBO;
-  glGenBuffers(1, &EBO);
+  unsigned int EBO[2];
+  glGenBuffers(2, EBO);
 
   {
     // 1. bind Vertex Array Object
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO[0]);
     // 2. Copy vertices array to a VBO
     // Array type of a vertex buffer object is GL_ARRAY_BUFFER
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
                  vertices.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
                  indices.data(), GL_STATIC_DRAW);
+
+    // 3. Then set the vertex attribute pointers
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          (void *)0);
+    glEnableVertexAttribArray(0);
+
+    // Unbind the VAO
+    glBindVertexArray(0);
+  }
+
+  {
+    // 1. bind Vertex Array Object
+    glBindVertexArray(VAO[1]);
+    // 2. Copy vertices array to a VBO
+    // Array type of a vertex buffer object is GL_ARRAY_BUFFER
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, vertices1.size() * sizeof(float),
+                 vertices1.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 indices1.size() * sizeof(unsigned int), indices1.data(),
+                 GL_STATIC_DRAW);
 
     // 3. Then set the vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
@@ -188,9 +212,10 @@ int main(int argc, char *argv[]) {
 
     // Draw triangle
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);
+    glBindVertexArray(VAO[0]);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    glBindVertexArray(VAO[1]);
+    glDrawElements(GL_TRIANGLES, indices1.size(), GL_UNSIGNED_INT, 0);
 
     // glfw: swap buffers and poll IO events (keys, mouse)
     // ---------------------------------------------------
@@ -200,8 +225,8 @@ int main(int argc, char *argv[]) {
 
   // Optional: terminate, clearing all allocated GLFW resources
   // ----------------------------------------------------------
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  glDeleteVertexArrays(2, VAO);
+  glDeleteBuffers(2, VBO);
   glDeleteProgram(shaderProgram);
 
   // glfw: terminate
