@@ -17,10 +17,10 @@ void processInput(GLFWwindow *window) {
 
 const char *const vertexShaderSource =
     "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 0) in vec2 aPos;\n"
     "void main()\n"
     "{\n"
-    "  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "  gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
     "}\0";
 
 const char *const fragmentShaderSource =
@@ -118,10 +118,10 @@ int main(int argc, char *argv[]) {
   // Setup vertex data
   // -----------------
   std::vector<float> vertices = {
-      0.5F,  0.5F,  0.0F, // top left
-      0.5F,  -0.5F, 0.0F, // bottom right
-      -0.5F, -0.5F, 0.0F, // bottom left
-      -0.5F, 0.5F,  0.0F, // top right
+      0.5F,  0.5F,   // top left
+      0.5F,  -0.5F,  // bottom right
+      -0.5F, -0.5F,  // bottom left
+      -0.5F, 0.5F,   // top right
   };
   std::vector<unsigned int> indices = {
       0, 1, 3, // First triangle
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
                  indices.data(), GL_STATIC_DRAW);
 
     // 3. Then set the vertex attribute pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
 
@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
     // Draw triangle
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     // glfw: swap buffers and poll IO events (keys, mouse)
