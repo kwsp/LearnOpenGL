@@ -75,6 +75,23 @@ unsigned int createShaderProgram(std::initializer_list<unsigned int> shaders) {
   return shaderProgram;
 }
 
+void bind_VAO_VBO_EBO(GLuint VAO, GLuint VBO, GLuint EBO,
+                      std::span<const float> vertices,
+                      std::span<const GLuint> indices) {
+  // 1. bind Vertex Array Object
+  glBindVertexArray(VAO);
+  // 2. Copy vertices array to a VBO
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+               vertices.data(), GL_STATIC_DRAW);
+
+  // Copy indices array to an EBO
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
+               indices.data(), GL_STATIC_DRAW);
+}
+
 int main(int argc, char *argv[]) {
   // glfw: init and config
   // ---------------------
@@ -150,20 +167,9 @@ int main(int argc, char *argv[]) {
   glGenBuffers(2, EBO);
 
   {
-    // 1. bind Vertex Array Object
-    glBindVertexArray(VAO[0]);
-    // 2. Copy vertices array to a VBO
-    // Array type of a vertex buffer object is GL_ARRAY_BUFFER
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
-                 vertices.data(), GL_STATIC_DRAW);
+    bind_VAO_VBO_EBO(VAO[0], VBO[0], EBO[0], vertices, indices);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
-
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
-                 indices.data(), GL_STATIC_DRAW);
-
-    // 3. Then set the vertex attribute pointers
+    // Then set the vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
@@ -173,17 +179,7 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    // 1. bind Vertex Array Object
-    glBindVertexArray(VAO[1]);
-    // 2. Copy vertices array to a VBO
-    // Array type of a vertex buffer object is GL_ARRAY_BUFFER
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, vertices1.size() * sizeof(float),
-                 vertices1.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 indices1.size() * sizeof(unsigned int), indices1.data(),
-                 GL_STATIC_DRAW);
+    bind_VAO_VBO_EBO(VAO[1], VBO[1], EBO[1], vertices1, indices1);
 
     // 3. Then set the vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
