@@ -15,21 +15,23 @@ void processInput(GLFWwindow *window) {
   }
 }
 
-const char *const vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+const char *const vertexShaderSource = R"glsl(
+  #version 330 core
+  layout (location = 0) in vec3 aPos;
+  void main()
+  {
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+  }
+)glsl";
 
-const char *const fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0";
+const char *const fragmentShaderSource = R"glsl(
+    #version 330 core
+    out vec4 FragColor;
+    void main()
+    {
+      FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+    }
+)glsl";
 
 unsigned int compileShader(int shaderType, const char *const shaderSource) {
   // Vertex shader
@@ -166,7 +168,7 @@ int main(int argc, char *argv[]) {
   // -----------
 
   // Wireframe mode (for debug)
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window)) {
     // Input
