@@ -10,9 +10,25 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
+float mixVal = 0.2f;
+
 void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, 1);
+  }
+
+  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    mixVal += 0.001f;
+    if (mixVal >= 1.0f) {
+      mixVal = 1.0f;
+    }
+  }
+
+  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    mixVal -= 0.001f;
+    if (mixVal <= 0.0f) {
+      mixVal = 0.0f;
+    }
   }
 }
 
@@ -138,6 +154,7 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Activate the shader
+    shader.setFloat("mixVal", mixVal);
     shader.use();
 
     // Render triangle
