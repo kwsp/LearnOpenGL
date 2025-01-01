@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
 #include "Shader.hpp"
+#include "Texture.hpp"
 #include <GLFW/glfw3.h>
 #include <fmt/core.h>
 #include <vector>
@@ -55,16 +56,25 @@ int main(int argc, char *argv[]) {
   // Setup vertex data
   // -----------------
   std::vector<float> vertices = {
-      // Position                     // Color
-      0.5F,  0.5F,  0.0F, 1.0f, 0.0f, 0.0f, // top left
-      0.5F,  -0.5F, 0.0F, 0.0f, 1.0f, 0.0f, // bottom right
-      -0.5F, -0.5F, 0.0F, 0.0f, 0.0f, 1.0f, // bottom left
-      -0.5F, 0.5F,  0.0F, 1.0f, 1.0f, 1.0f, // top right
+      // Position                     // Color                  // texture coord
+      0.5F,  0.5F,  0.0F, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top left
+      0.5F,  -0.5F, 0.0F, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+      -0.5F, -0.5F, 0.0F, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+      -0.5F, 0.5F,  0.0F, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // top right
   };
   std::vector<unsigned int> indices = {
       0, 1, 3, // First triangle
       1, 2, 3, // Second triangle
   };
+
+  std::vector<float> texCoords = {
+      0.0f, 0.0f, // lower left corner
+      1.0f, 0.0f, // lower right corner
+      0.5f, 1.0f, // top center corner
+  };
+
+  auto texture1 = loadTexture("res/container.jpg");
+  auto texture2 = loadTexture("res/awesomeface.png");
 
   // Vertex array object (VAO)
   unsigned int VAO{};
@@ -93,12 +103,15 @@ int main(int argc, char *argv[]) {
 
     // 3. Then set the vertex attribute pointers
     // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                           (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                          (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Unbind the VAO
     glBindVertexArray(0);
@@ -109,6 +122,10 @@ int main(int argc, char *argv[]) {
 
   // Wireframe mode (for debug)
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  shader.use();
+  shader.setInt("texture1", 0);
+  shader.setInt("texture2", 1);
 
   while (!glfwWindowShouldClose(window)) {
     // Input
@@ -124,6 +141,11 @@ int main(int argc, char *argv[]) {
     shader.use();
 
     // Render triangle
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
